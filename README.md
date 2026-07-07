@@ -15,6 +15,10 @@ Every lab starts from a working example and has explicit **"what is this for"** 
 
 - Plain notebooks only — no DLT, no Asset Bundles, no pip installs, no external data.
 - Runs on any workspace including **Databricks Free Edition** (use catalog `main`).
+- **Serverless environment: pick the latest version** (v5 at time of writing — check the
+  environment panel for newer). v5+ ships mlflow and scikit-learn; older versions (≤4)
+  don't, and Lab 4 will fail on them with `No module named 'mlflow'`. Same applies when
+  scheduling the Lab 2 job or running these notebooks headless.
 - All catalog/schema references flow from widgets in `notebooks/00_config.py`.
 - Serving endpoints are optional (instructor demo); all lab inference uses
   `mlflow.pyfunc.load_model` in the notebook.
