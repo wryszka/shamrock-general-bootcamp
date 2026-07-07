@@ -45,21 +45,22 @@ real patterns and Genie answers make business sense.
 
 ## Agenda
 
-### Full day (attendees hands-on)
+### Full day (1h presentation up front, then attendees hands-on)
 
 | Time | Session | Notebook |
 |---|---|---|
-| 08:30 | Kickoff, intros, objectives | — |
-| 09:00 | **Lab 1 — Meet your book** (notebooks, SQL+Python, Assistant) | `02_lab_meet_your_book` |
-| 09:45 | **Lab 2 — The nightly pipeline** (bronze→silver→gold, schedule a job) | `03_lab_nightly_pipeline` |
-| 10:45 | Break | |
-| 11:00 | **Lab 3 — Dashboards + Genie room** (self-service value) | `04_lab_dashboards_genie` |
-| 12:00 | Lunch | |
-| 13:30 | **Lab 4 — MLflow versioning** (register, compare, alias swap, rollback, batch score) | `05_lab_mlflow_versioning` |
-| 14:45 | Break | |
-| 15:00 | **Lab 5 — AI on claim documents** (instructor demo: ai_parse / ai_extract on FNOL) | `06_demo_ai_functions_fnol` |
-| 15:30 | Stretch tracks by team / open build | |
-| 16:00 | Showcase, next steps, wrap | |
+| 08:30 | Welcome & introductions | — |
+| 08:45 | **Presentation: the big picture** + live Pricing Workbench demo | — |
+| 09:20 | **Presentation: the tech you asked for** (MLOps, deployment, pipelines, governance) | — |
+| 09:50 | Coffee + workspace setup | `00_config`, `01_data_generator` |
+| 10:10 | **Lab 1 — Meet your book** (notebooks, SQL+Python, Assistant) | `02_lab_meet_your_book` |
+| 10:40 | **Lab 2 — The nightly pipeline** (bronze→silver→gold, schedule a job) | `03_lab_nightly_pipeline` |
+| 11:30 | **Lab 3 — Dashboards + Genie room** (self-service value) | `04_lab_dashboards_genie` |
+| 12:20 | Lunch | |
+| 13:15 | **Lab 4 — MLflow versioning** (register, compare, alias swap, rollback, batch score) | `05_lab_mlflow_versioning` |
+| 14:45 | **Lab 5 — AI on claim documents** (instructor demo: ai_parse / ai_extract on FNOL) | `06_demo_ai_functions_fnol` |
+| 15:10 | Stretch tracks by team / open build | |
+| 15:50 | Showcase, next steps, wrap (close 16:15) | |
 
 ### Half day (instructor presents)
 
