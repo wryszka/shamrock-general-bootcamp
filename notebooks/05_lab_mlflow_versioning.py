@@ -54,7 +54,7 @@ df = spark.sql("""
 """).toPandas()
 
 # one-hot the categoricals; keep the full column list for reuse at inference time
-X_all = pd.get_dummies(df.drop(columns="had_claim"), columns=["county", "cover_type"])
+X_all = pd.get_dummies(df.drop(columns="had_claim"), columns=["county", "cover_type"], dtype=int)
 y = df["had_claim"]
 FEATURE_COLS = list(X_all.columns)
 
@@ -76,33 +76,38 @@ with mlflow.start_run(run_name="risk_model_v1") as run:
 
     mlflow.log_params({"features": "age, ncd, penalty_points, county", "n_estimators": 80})
     mlflow.log_metric("auc", auc)
-    mlflow.sklearn.log_model(
+    info = mlflow.sklearn.log_model(
         model, name="model",
-        registered_model_name=MODEL_NAME,
         input_example=X_train[V1_FEATURES].head(3),
     )
-print(f"v1 AUC: {auc:.3f}")
+
+# Registering the logged model creates a new VERSION in Unity Catalog.
+# On a fresh schema this is version 1 — we capture it so reruns also work.
+V1 = mlflow.register_model(info.model_uri, MODEL_NAME).version
+print(f"v1 AUC: {auc:.3f} — registered as version {V1}")
 
 # COMMAND ----------
 
-# Point the 'champion' alias at version 1 — downstream code will only ever ask for @champion
-client.set_registered_model_alias(MODEL_NAME, "champion", 1)
+# Point the 'champion' alias at v1 — downstream code will only ever ask for @champion
+client.set_registered_model_alias(MODEL_NAME, "champion", V1)
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC ## 3. ✏️ EXERCISE — train **v2** with more signal
 # MAGIC
-# MAGIC Copy the v1 training cell and change two things:
+# MAGIC Copy the v1 training cell and change three things:
 # MAGIC - use **all** features (`FEATURE_COLS` — adds engine size and cover type)
 # MAGIC - `run_name="risk_model_v2"` and log `"features": "all"`
+# MAGIC - capture the new version as `V2` instead of `V1`
 # MAGIC
-# MAGIC Registering with the same `MODEL_NAME` automatically creates **version 2** —
+# MAGIC Registering to the same `MODEL_NAME` automatically creates the **next version** —
 # MAGIC that's the versioning happening, no extra ceremony.
 
 # COMMAND ----------
 
-# TODO: train and register v2 here
+# TODO: train and register v2 here, ending with:
+# V2 = mlflow.register_model(info.model_uri, MODEL_NAME).version
 
 # COMMAND ----------
 
@@ -128,7 +133,7 @@ display(runs[["tags.mlflow.runName", "metrics.auc", "params.features", "start_ti
 
 sample_drivers = X_test.head(5)
 
-v1 = mlflow.pyfunc.load_model(f"models:/{MODEL_NAME}/1")   # <- pinned version number
+v1 = mlflow.pyfunc.load_model(f"models:/{MODEL_NAME}/{V1}")   # <- pinned version number
 v1_scores = v1.predict(sample_drivers[V1_FEATURES])
 
 # TODO (after your v2 exists): load version 2 the same way and compare per-driver scores
@@ -157,9 +162,9 @@ _, v = score_renewal_book()
 
 # COMMAND ----------
 
-# ✏️ EXERCISE: promote your v2, then rerun the cell above. Then ROLL BACK to 1 and rerun again.
-client.set_registered_model_alias(MODEL_NAME, "champion", 2)   # promote
-# client.set_registered_model_alias(MODEL_NAME, "champion", 1) # rollback — beat 4
+# ✏️ EXERCISE: promote your v2, then rerun the cell above. Then ROLL BACK to V1 and rerun again.
+client.set_registered_model_alias(MODEL_NAME, "champion", V2)   # promote
+# client.set_registered_model_alias(MODEL_NAME, "champion", V1) # rollback — beat 4
 
 # COMMAND ----------
 
@@ -177,7 +182,7 @@ renewals = spark.sql("""
 """).toPandas()
 
 feats = pd.get_dummies(renewals[["driver_age", "ncd_years", "penalty_points", "engine_cc", "county", "cover_type"]],
-                       columns=["county", "cover_type"]).reindex(columns=FEATURE_COLS, fill_value=0)
+                       columns=["county", "cover_type"], dtype=int).reindex(columns=FEATURE_COLS, fill_value=0)
 
 champion = mlflow.pyfunc.load_model(f"models:/{MODEL_NAME}@champion")
 used_cols = [c.name for c in champion.metadata.get_input_schema().inputs]

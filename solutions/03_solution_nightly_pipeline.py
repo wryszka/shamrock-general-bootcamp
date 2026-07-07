@@ -33,7 +33,7 @@ for name in ["policies", "claims"]:
 (
     spark.table("1_bronze_policies")
     .dropDuplicates(["policy_id"])
-    .withColumn("start_date", F.to_date("start_date", "yyyy-MM-dd"))
+    .withColumn("start_date", F.expr("try_to_date(start_date, 'yyyy-MM-dd')"))
     .withColumn("annual_premium", F.col("annual_premium").cast("double"))
     .withColumn("driver_age", F.col("driver_age").cast("int"))
     .withColumn("ncd_years", F.col("ncd_years").cast("int"))
@@ -50,7 +50,7 @@ for name in ["policies", "claims"]:
 (
     spark.table("1_bronze_claims")
     .dropDuplicates(["claim_id"])
-    .withColumn("claim_date", F.to_date("claim_date", "yyyy-MM-dd"))
+    .withColumn("claim_date", F.expr("try_to_date(claim_date, 'yyyy-MM-dd')"))
     .withColumn("incurred_amount", F.col("incurred_amount").cast("double"))
     .filter("incurred_amount >= 0")
     .drop("_ingested_at", "_source_file")

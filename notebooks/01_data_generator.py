@@ -97,8 +97,7 @@ pol = (
         "vehicle_make", "engine_cc", "cover_type", "start_date", "annual_premium",
         "has_claim",
     )
-    .cache()
-)
+)  # note: no .cache() — not supported on serverless; seeded rand() recomputes identically
 print(f"policies: {pol.count():,}  |  claim frequency: {pol.filter('has_claim').count() / N_POLICIES:.1%}")
 
 # COMMAND ----------
@@ -133,7 +132,6 @@ claims = (
     )
     .withColumn("status", F.expr("CASE WHEN sev_u < 0.75 THEN 'settled' WHEN sev_u < 0.92 THEN 'open' ELSE 'in_review' END"))
     .select("claim_id", "policy_id", "claim_type", "claim_date", "incurred_amount", "status")
-    .cache()
 )
 print(f"claims: {claims.count():,}")
 

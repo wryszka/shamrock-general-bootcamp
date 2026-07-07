@@ -51,7 +51,9 @@ display(spark.sql("SELECT count(*) AS bronze_policy_rows FROM 1_bronze_policies"
 silver_policies = (
     spark.table("1_bronze_policies")
     .dropDuplicates(["policy_id"])
-    .withColumn("start_date", F.to_date("start_date", "yyyy-MM-dd"))          # bad dates -> NULL
+    # try_to_date: bad dates (like 31/02/2025) become NULL instead of failing the job.
+    # Plain to_date would crash on the first bad row — try again with it later and see.
+    .withColumn("start_date", F.expr("try_to_date(start_date, 'yyyy-MM-dd')"))
     .withColumn("annual_premium", F.col("annual_premium").cast("double"))
     .withColumn("driver_age", F.col("driver_age").cast("int"))
     .withColumn("ncd_years", F.col("ncd_years").cast("int"))
@@ -73,7 +75,7 @@ print(f"bronze {before:,} -> silver {after:,}  ({before - after:,} rows cleaned 
 # MAGIC
 # MAGIC Build `2_silver_claims` from `1_bronze_claims`:
 # MAGIC - dedupe on `claim_id`
-# MAGIC - cast `claim_date` to date, `incurred_amount` to double
+# MAGIC - cast `claim_date` to date (use `try_to_date` like above), `incurred_amount` to double
 # MAGIC - drop rows where `incurred_amount` is negative (the `-1` placeholders)
 # MAGIC - drop the `_ingested_at` / `_source_file` columns
 

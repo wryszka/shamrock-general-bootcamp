@@ -13,8 +13,14 @@
 
 # COMMAND ----------
 
+# Each attendee works in their OWN schema (tables, jobs and registered model versions
+# don't collide across 20+ people). Default derives from your username — leave it alone
+# unless told otherwise.
+_user = spark.sql("SELECT current_user()").first()[0]
+_user_slug = _user.split("@")[0].replace(".", "_").replace("-", "_")
+
 dbutils.widgets.text("catalog", "main", "Catalog")
-dbutils.widgets.text("schema", "shamrock_bootcamp", "Schema")
+dbutils.widgets.text("schema", f"shamrock_{_user_slug}", "Schema")
 
 CATALOG = dbutils.widgets.get("catalog")
 SCHEMA = dbutils.widgets.get("schema")
