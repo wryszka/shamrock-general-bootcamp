@@ -13,11 +13,34 @@ Stuck? Every lab has a full solution in the `solutions/` folder.
 
 ---
 
+## What we're learning today — at a glance
+
+One synthetic motor book, five parts, each solving a business problem with a specific
+set of Databricks tools:
+
+| Part | The business problem | What you learn | Databricks tools |
+|---|---|---|---|
+| **1. Meet your book** | Which county is losing us money? | Notebooks: SQL + Python on the same data; AI-assisted analysis | Notebooks, Databricks Assistant / Genie Code |
+| **2. The nightly pipeline** | Two analysts, two different numbers | Bronze → silver → gold; cleaning as a contract; scheduling | Delta tables, Workflows (scheduled jobs), Genie Code |
+| **3. Self-service analytics** | The Monday report queue | Dashboards built by describing them; Genie rooms + curation | AI/BI Dashboards, Genie spaces |
+| **4. Governed model lifecycle** | R scripts emailed to IT | Track experiments; version, compare, pin, alias-swap and roll back models; batch scoring | MLflow, Unity Catalog model registry |
+| **5. AI on documents** *(demo)* | Humans retyping claim letters | Parse / extract / classify documents in SQL | AI Functions (`ai_extract`, `ai_classify`, `ai_parse_document`) |
+
+Running underneath everything, all day: **Unity Catalog** (your own schema, permissions,
+lineage, a governed model) and **serverless compute** (nothing to size or manage).
+
+**Skills you take home:** query and chart data in a notebook · prompt an AI to write
+working code · build and schedule a production pipeline · create a dashboard and a
+curated Genie room · register, version, compare, release and roll back an ML model ·
+know when SQL AI functions replace an OCR project.
+
+---
+
 ## Start here — setup (15 min, do once)
 
 1. Log in to the workspace (URL on screen) and open the folder shown by the
-   facilitator (e.g. `Workspace → Shared → insurance-bootcamp`). Working from GitHub
-   instead? `New → Git folder` → `https://github.com/wryszka/insurance-bootcamp`.
+   facilitator (e.g. `Workspace → Shared → shamrock-general-bootcamp`). Working from GitHub
+   instead? `New → Git folder` → `https://github.com/wryszka/shamrock-general-bootcamp`.
 2. Open `notebooks/00_config` and click **Connect** (top right) → **Serverless**.
 3. **Important:** open the **Environment** panel (side icon) and set the environment
    version to the **latest** (v5 or higher). Older versions are missing the ML

@@ -1,6 +1,6 @@
-# Insurance Bootcamp — Shamrock General
+# Shamrock General Bootcamp
 
-A hands-on Databricks bootcamp built around a synthetic Irish motor insurance book
+`wryszka/shamrock-general-bootcamp` — a hands-on Databricks bootcamp built around a synthetic Irish motor insurance book
 ("Shamrock General", a fictional insurer). One dataset runs through the whole day:
 raw extracts → pipeline → dashboards & Genie → ML with MLflow versioning → AI on documents.
 
