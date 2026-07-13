@@ -55,7 +55,18 @@ containing `policies.csv` and `claims.csv`, plus tables `2_silver_quotes` and
 
 ---
 
-## Lab 1 — Where are we losing money? (40 min)
+## How the afternoon runs
+
+One self-paced block, **13:20-15:45**. Work through Labs 1-4 in order at your own
+pace - the times on each lab are a suggested pace, not a schedule. Facilitators are
+floating: wave when stuck, don't sit on a blocker. If you're behind at ~14:45, jump
+straight to **Lab 4** - it's the one not to miss. Lab 5 runs as a short demo at your
+table on request. At **15:45** we regroup: come ready to show one thing you found or
+built.
+
+---
+
+## Lab 1 — Where are we losing money? (~25 min)
 
 **Your task:** you've just joined Shamrock General as an analyst. The CFO is convinced
 *"Dublin is the problem."* Before Friday's meeting, verify it: **which county actually
@@ -92,7 +103,7 @@ the Databricks Assistant** as your pair-analyst.
 
 ---
 
-## Lab 2 — One version of the truth, every morning (60 min)
+## Lab 2 — One version of the truth, every morning (~40 min)
 
 **Your task:** your loss-ratio number and your neighbour's don't match — the raw files
 contain duplicates, impossible dates and negative premiums, and each of you handled
@@ -135,7 +146,7 @@ and your job has one successful run. Compare bronze vs silver row counts — you
 
 ---
 
-## Lab 3 — Stop being the report queue (60 min)
+## Lab 3 — Stop being the report queue (~30 min)
 
 **Your task:** your claims manager asks you the same five questions every Monday, plus
 one new one you can never predict. **Give them a dashboard for the known questions —
@@ -144,7 +155,7 @@ and a Genie room where they can ask the unknown ones themselves, in plain Englis
 **You will use:** **AI/BI Dashboards** (build the widgets by describing them — this is
 Genie Code for dashboards) and a **Genie space** on your schema.
 
-### Part A — the dashboard (25 min)
+### Part A — the dashboard
 
 1. **New → Dashboard**. Add datasets: your `3_gold_portfolio_summary` and
    `3_gold_loss_ratio_monthly`.
@@ -161,7 +172,7 @@ Genie Code for dashboards) and a **Genie space** on your schema.
 
 ✅ **Checkpoint A:** published dashboard, filter working.
 
-### Part B — the Genie room (25 min)
+### Part B — the Genie room
 
 5. **New → Genie space**. Add tables: `2_silver_policies`, `2_silver_claims`,
    `2_silver_quotes`, `2_silver_renewals`, `3_gold_portfolio_summary`.
@@ -189,7 +200,7 @@ Genie Code for dashboards) and a **Genie space** on your schema.
 
 ---
 
-## Lab 4 — Retire the R-script upload (75 min)
+## Lab 4 — Retire the R-script upload (~45 min — do not miss this one)
 
 **Your task:** today, putting a new pricing risk model live means emailing an R script
 to IT. Nobody can prove which model priced last quarter, and rolling back a bad one
@@ -241,7 +252,7 @@ touching the scoring code; the Experiments UI shows both runs compared.
 
 ---
 
-## Lab 5 — Claims documents without an OCR project (30 min, demo)
+## Lab 5 — Claims documents without an OCR project (mini-demo, on request)
 
 **The business problem:** claims arrive as letters and PDFs; today a human retypes
 them. Watch `06_demo_ai_functions_fnol`: three first-notification-of-loss letters

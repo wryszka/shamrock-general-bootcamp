@@ -45,22 +45,19 @@ real patterns and Genie answers make business sense.
 
 ## Agenda
 
-### Full day (1h presentation up front, then attendees hands-on)
+### Full day (theory morning, one self-paced build block in the afternoon)
 
 | Time | Session | Notebook |
 |---|---|---|
-| 08:30 | Welcome & introductions | — |
-| 08:45 | **Presentation: the big picture** + live Pricing Workbench demo | — |
-| 09:20 | **Presentation: the tech you asked for** (MLOps, deployment, pipelines, governance) | — |
-| 09:50 | Coffee + workspace setup | `00_config`, `01_data_generator` |
-| 10:10 | **Lab 1 — Meet your book** (notebooks, SQL+Python, Assistant) | `02_lab_meet_your_book` |
-| 10:40 | **Lab 2 — The nightly pipeline** (bronze→silver→gold, schedule a job) | `03_lab_nightly_pipeline` |
-| 11:30 | **Lab 3 — Dashboards + Genie room** (self-service value) | `04_lab_dashboards_genie` |
-| 12:20 | Lunch | |
-| 13:15 | **Lab 4 — MLflow versioning** (register, compare, alias swap, rollback, batch score) | `05_lab_mlflow_versioning` |
-| 14:45 | **Lab 5 — AI on claim documents** (instructor demo: ai_parse / ai_extract on FNOL) | `06_demo_ai_functions_fnol` |
-| 15:10 | Stretch tracks by team / open build | |
-| 15:50 | Showcase, next steps, wrap (close 16:15) | |
+| 10:00 | **Presentation: the big picture** + live Pricing Workbench demo | — |
+| 11:00 | **Presentation: the tech tour** — models & R · data in/out · governance & cost | — |
+| 12:00 | Lunch | |
+| 13:00 | Setup + the roadmap: all labs briefed once | `00_config`, `01_data_generator` |
+| 13:20 | **Self-paced build — Labs 1–4** in order, instructors floating | `02`–`05` |
+| — | *Lab 5 — AI on claim documents runs as a mini-demo on request during the block* | `06_demo_ai_functions_fnol` |
+| 14:30 | Coffee — grab and go, keep building | |
+| 15:45 | Showcase, stretch-track ideas, next steps | |
+| 16:00 | Close | |
 
 ### Half day (instructor presents)
 
