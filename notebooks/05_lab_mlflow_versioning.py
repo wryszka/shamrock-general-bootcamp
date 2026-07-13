@@ -133,12 +133,15 @@ display(runs[["tags.mlflow.runName", "metrics.auc", "params.features", "start_ti
 
 sample_drivers = X_test.head(5)
 
-v1 = mlflow.pyfunc.load_model(f"models:/{MODEL_NAME}/{V1}")   # <- pinned version number
-v1_scores = v1.predict(sample_drivers[V1_FEATURES])
+# Load the sklearn flavor so we get predict_proba. (Gotcha worth knowing: the generic
+# pyfunc flavor's .predict() on a classifier returns the 0/1 CLASS LABEL — with a ~15%
+# claim rate that's a column of zeros, not probabilities.)
+v1 = mlflow.sklearn.load_model(f"models:/{MODEL_NAME}/{V1}")   # <- pinned version number
+v1_scores = v1.predict_proba(sample_drivers[V1_FEATURES])[:, 1]
 
 # TODO (after your v2 exists): load version 2 the same way and compare per-driver scores
 comparison = sample_drivers[["driver_age", "penalty_points", "ncd_years"]].copy()
-comparison["v1_claim_prob"] = v1_scores
+comparison["v1_claim_prob"] = v1_scores.round(3)
 display(comparison)
 
 # COMMAND ----------
@@ -153,7 +156,7 @@ display(comparison)
 
 def score_renewal_book():
     """This is 'production'. Note: it doesn't know or care which version is champion."""
-    champion = mlflow.pyfunc.load_model(f"models:/{MODEL_NAME}@champion")
+    champion = mlflow.sklearn.load_model(f"models:/{MODEL_NAME}@champion")
     version = client.get_model_version_by_alias(MODEL_NAME, "champion").version
     print(f"scored with champion = version {version}")
     return champion, version
@@ -184,11 +187,11 @@ renewals = spark.sql("""
 feats = pd.get_dummies(renewals[["driver_age", "ncd_years", "penalty_points", "engine_cc", "county", "cover_type"]],
                        columns=["county", "cover_type"], dtype=int).reindex(columns=FEATURE_COLS, fill_value=0)
 
-champion = mlflow.pyfunc.load_model(f"models:/{MODEL_NAME}@champion")
-used_cols = [c.name for c in champion.metadata.get_input_schema().inputs]
-renewals["claim_risk"] = champion.predict(feats[used_cols])
+champion = mlflow.sklearn.load_model(f"models:/{MODEL_NAME}@champion")
+used_cols = list(champion.feature_names_in_)   # champion may be v1 or v2 — ask the model
+renewals["claim_risk"] = champion.predict_proba(feats[used_cols])[:, 1]
 
-spark.createDataFrame(renewals).write.mode("overwrite").saveAsTable("4_scored_renewals")
+spark.createDataFrame(renewals).write.mode("overwrite").option("overwriteSchema", "true").saveAsTable("4_scored_renewals")
 display(spark.sql("SELECT * FROM 4_scored_renewals ORDER BY claim_risk DESC LIMIT 10"))
 
 # COMMAND ----------

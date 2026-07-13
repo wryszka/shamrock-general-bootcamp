@@ -4,7 +4,10 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("catalog", "main", "Catalog")
+_default_catalog = spark.sql("SELECT current_catalog()").first()[0]
+if _default_catalog in ("spark_catalog", "hive_metastore", "system", "samples"):
+    _default_catalog = "main"
+dbutils.widgets.text("catalog", _default_catalog, "Catalog")
 dbutils.widgets.text("schema", "shamrock_bootcamp", "Schema")
 CATALOG = dbutils.widgets.get("catalog")
 SCHEMA = dbutils.widgets.get("schema")

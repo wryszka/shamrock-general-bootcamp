@@ -6,7 +6,10 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("catalog", "main", "Catalog")
+_default_catalog = spark.sql("SELECT current_catalog()").first()[0]
+if _default_catalog in ("spark_catalog", "hive_metastore", "system", "samples"):
+    _default_catalog = "main"
+dbutils.widgets.text("catalog", _default_catalog, "Catalog")
 dbutils.widgets.text("schema", "shamrock_bootcamp", "Schema")
 CATALOG = dbutils.widgets.get("catalog")
 SCHEMA = dbutils.widgets.get("schema")
@@ -73,13 +76,16 @@ assert auc2 >= auc1 - 0.02, "v2 should be at least comparable to v1"
 # COMMAND ----------
 
 # Beat 2 — inference from a pinned previous version (the auditor question)
+# sklearn flavor for predict_proba: pyfunc .predict() on a classifier returns 0/1 labels
 sample_drivers = X_test.head(5)
-v1_model = mlflow.pyfunc.load_model(f"models:/{MODEL_NAME}/{V1}")
-v2_model = mlflow.pyfunc.load_model(f"models:/{MODEL_NAME}/{V2}")
+v1_model = mlflow.sklearn.load_model(f"models:/{MODEL_NAME}/{V1}")
+v2_model = mlflow.sklearn.load_model(f"models:/{MODEL_NAME}/{V2}")
 
 comparison = sample_drivers[["driver_age", "penalty_points", "ncd_years"]].copy()
-comparison["v1_claim_prob"] = v1_model.predict(sample_drivers[V1_FEATURES])
-comparison["v2_claim_prob"] = v2_model.predict(sample_drivers[FEATURE_COLS])
+comparison["v1_claim_prob"] = v1_model.predict_proba(sample_drivers[V1_FEATURES])[:, 1].round(3)
+comparison["v2_claim_prob"] = v2_model.predict_proba(sample_drivers[FEATURE_COLS])[:, 1].round(3)
+comparison["delta"] = (comparison["v2_claim_prob"] - comparison["v1_claim_prob"]).round(3)
+assert comparison["v1_claim_prob"].abs().sum() > 0, "probabilities came back all zero"
 display(comparison)
 
 # COMMAND ----------
@@ -111,10 +117,12 @@ feats = pd.get_dummies(
     columns=["county", "cover_type"], dtype=int,
 ).reindex(columns=FEATURE_COLS, fill_value=0)
 
-champion = mlflow.pyfunc.load_model(f"models:/{MODEL_NAME}@champion")
-used_cols = [c.name for c in champion.metadata.get_input_schema().inputs]
-renewals["claim_risk"] = champion.predict(feats[used_cols])
+champion = mlflow.sklearn.load_model(f"models:/{MODEL_NAME}@champion")
+used_cols = list(champion.feature_names_in_)   # champion may be v1 or v2 — ask the model
+renewals["claim_risk"] = champion.predict_proba(feats[used_cols])[:, 1]
 
-spark.createDataFrame(renewals).write.mode("overwrite").saveAsTable("4_scored_renewals")
+spark.createDataFrame(renewals).write.mode("overwrite").option("overwriteSchema", "true").saveAsTable("4_scored_renewals")
+risk = spark.sql("SELECT min(claim_risk) lo, max(claim_risk) hi FROM 4_scored_renewals").first()
+assert 0 < risk.hi <= 1 and risk.lo != risk.hi, f"claim_risk looks wrong: {risk}"
 display(spark.sql("SELECT * FROM 4_scored_renewals ORDER BY claim_risk DESC LIMIT 10"))
-print("Lab 4 solution complete")
+print(f"Lab 4 solution complete — claim_risk range {risk.lo:.3f} to {risk.hi:.3f}")
